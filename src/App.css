@@ -6,14 +6,15 @@ body{
     font-size:30px;
 }
 .camera-container {
-
   display: flex;
   gap: 12px;
   width: 100%;
-  height: 100vh;
+  min-height: 100vh; /* ensures full height but doesn’t force */
   padding: 12px;
   background: #0f172a;
+  box-sizing: border-box;
 }
+
 /* MAIN CAMERA */
 .camera {
   margin-top: 20px;
@@ -28,12 +29,14 @@ body{
   flex: 3;
   border-radius: 14px;
   border-color: green;
-  height: 90vh;
+  height: auto; /* let it scale naturally */
+  max-height: 90vh; /* optional cap */
 }
 .camera-video {
   width: 100%;
   height: 100%;
-  object-fit: cover;     
+  object-fit: contain; /* fits inside container without cropping */
+  background: black;   /* fill empty areas */
 }
 
 .camera.sub {
@@ -80,15 +83,6 @@ body{
 }
 
 .overlay.top-right {
-  background: rgba(0, 0, 0, 0.5);
-  color: #00ff88;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-family: monospace;
-  font-size: 30px; /* adjust font size for readability */
-  line-height: 1.4;
-  z-index: 5;
-  margin-top: 65vh;
-  min-width: 200px;      /* minimum width so it's not too thin */
-  max-width: 300px;      /* optional, so it doesn’t stretch too far */
+  margin-top: auto; /* let flex push it to bottom if needed */
+  top: 10px; /* safer than 65vh */
 }
