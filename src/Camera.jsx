@@ -1,6 +1,8 @@
 import "./App.css";
 import cameraGif from './assets/giphy.gif';
 import { useEffect, useRef, useState } from "react";
+import samplevideo1 from './assets/samplevideo1.mp4';
+import samplevideo2 from './assets/samplevideo2.mp4';
 
 function Camera() {
   const videoRef = useRef(null);
@@ -13,22 +15,41 @@ function Camera() {
   const [violationTime, setViolationTime] = useState(0); // time in seconds
   const violationTimerRef = useRef(null);
 
+  const videoRef2 = useRef(null);
+  const [secondCamExists, setSecondCamExists] = useState(false);
+
+
   useEffect(() => {
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({//<____________this starts the camera 
-          video: true,
-          audio: false
+  async function startCamera() {
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cams = devices.filter(d => d.kind === "videoinput");
+      console.log("Detected cams:", cams.map(c => c.label));
+      if (cams[0]) {
+        const stream1 = await navigator.mediaDevices.getUserMedia({
+          video: { deviceId: { exact: cams[0].deviceId } }
         });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error("Error accessing camera:", error);
+        videoRef.current.srcObject = stream1;
       }
+      if (cams[1]) {
+        setSecondCamExists(false);
+        const stream2 = await navigator.mediaDevices.getUserMedia({
+          video: { deviceId: { exact: cams[1].deviceId } }
+        });
+        videoRef2.current.srcObject = stream2;
+      } else {
+        setSecondCamExists(false);
+      }
+
+    } catch (err) {
+      console.error("Camera error:", err);
     }
-    startCamera();
-  }, []);
+  }
+
+  startCamera();
+}, []);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -39,15 +60,21 @@ function Camera() {
   }, []);
 
   useEffect(() => {
-    if (violationTime === 16 && violationImageURL) {//<-----this checks the violation and triggers browser download
+    if (violationTime >= 15 && violationImageURL) {
       triggerDownload(violationImageURL);
+      URL.revokeObjectURL(violationImageURL);
+      setViolationImageURL(null);
+      violationActiveRef.current = false;
+      clearInterval(violationTimerRef.current);
+      violationTimerRef.current = null;
+      setViolationTime(0);
     }
   }, [violationTime, violationImageURL]);
 
   const triggerDownload = (url) => {
       const link = document.createElement('a');
       link.href = url;
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const timestamp = new Date();
       link.download = `violation_report_${timestamp}.jpg`;
       document.body.appendChild(link);
       link.click();
@@ -78,15 +105,22 @@ function Camera() {
       if (!blob) return;
 
       const formData = new FormData();
-      formData.append("file", blob, "frame.jpg"); // ✅ FIXED
+      formData.append("file", blob, "frame.jpg"); 
 
       const response = await fetch(
-        "https://ml-backend-zsa8.onrender.com/analyse",
+        "http://127.0.0.1:8000/analyse",
         {
           method: "POST",
           body: formData,
         }
       );
+      // const response = await fetch(
+      //   "/analyse", 
+      //   {
+      //     method: "POST",
+      //     body: formData,
+      //   }
+      // );
 
       if (!response.ok) {
         throw new Error("Backend error");
@@ -134,7 +168,7 @@ function Camera() {
     <div className="camera-container">
       <div className="camera main">
 
-        <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
+        <video ref={videoRef} /*src={samplevideo1}*/ autoPlay playsInline muted className="camera-video" />
 
         <div className="top-rightpanel">
             {violationImageURL && (
@@ -165,9 +199,14 @@ function Camera() {
       <div className="sub-cameras">
         <div>Camera_2</div>
         <div className="camera sub">
-          <img src={cameraGif} alt="camera" />
-          <div className="overlay top-left">Camera 2 • N/A</div>
-        </div>
+            {secondCamExists ? 
+            (<video ref={videoRef2} autoPlay playsInline muted className="camera-video"/>)
+            :(<img src={cameraGif} alt="camera" />)}
+            <div className="overlay top-left">
+              Camera 2 • {secondCamExists ? "LIVE" : "N/A"}
+            </div>
+          </div>
+
         <div>Camera_3</div>
         <div className="camera sub">
           <img src={cameraGif} alt="camera" />
