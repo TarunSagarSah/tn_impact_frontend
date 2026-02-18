@@ -1,88 +1,132 @@
+/* ---------- GLOBAL ---------- */
 body{
-    margin: 0;
-    padding: 0;
-    background-color: black;
-    color: #e5e7eb;
-    font-size:30px;
-}
-.camera-container {
-  display: flex;
-  gap: 12px;
-  width: 100%;
-  min-height: 100vh; /* ensures full height but doesn’t force */
-  padding: 12px;
-  background: #0f172a;
-  box-sizing: border-box;
+  margin:0;
+  padding:0;
+  background:#000;
+  color:#e5e7eb;
+  font-family: system-ui, sans-serif;
+  font-size:16px;
+  overflow:hidden;
 }
 
-/* MAIN CAMERA */
-.camera {
-  margin-top: 20px;
-  position: relative;
-  overflow: hidden;
-  background: #000;
-  border: 1px solid #1f2937;
+/* ---------- MAIN LAYOUT ---------- */
+.camera-container{
+  display:flex;
+  gap:14px;
+  width:100vw;
+  height:100vh;
+  padding:14px;
+  background:#0f172a;
+  box-sizing:border-box;
+}
+
+/* ---------- CAMERA BASE ---------- */
+.camera{
+  position:relative;
+  overflow:hidden;
+  background:#000;
+  border:1px solid #1f2937;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
-  width:90%;
-}
-.camera.main {
-  flex: 3;
-  border-radius: 14px;
-  border-color: green;
-  height: auto; /* let it scale naturally */
-  max-height: 90vh; /* optional cap */
-}
-.camera-video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* fits inside container without cropping */
-  background: black;   /* fill empty areas */
 }
 
-.camera.sub {
-  flex: 1;
-  border-radius: 12px;
-  border-color: green;
-  margin-top: 20px;
-  margin-left: 10px;
-}
-.overlay {
-  box-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
-  position: absolute;
-  color: #00ff88;
-  font-family: monospace;
-  font-size: 14px;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 6px 10px;
-  border-radius: 6px;
-  line-height: 1.4;
-  font-size: 40px;
+/* ---------- MAIN CAMERA ---------- */
+.camera.main{
+  flex:3;
+  border-radius:14px;
+  border-color:#00ff88;
+  aspect-ratio:16/9;
+  max-height:95vh;
 }
 
-.top-left {
-  top: 10px;
-  left: 10px;
+/* ---------- VIDEO ---------- */
+.camera-video{
+  width:100%;
+  height:100%;
 }
 
-.top-rightpanel {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  flex-direction: column; /* stack items vertically */
-  align-items: flex-end;  /* keep right-aligned */
-  gap: 10px;              /* space between image and prediction panel */
-  z-index: 10;            /* overall on top of camera */
+/* ---------- SIDE CAMERAS COLUMN ---------- */
+.sub-cameras{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 }
 
-.violation-overlay {
-  width: 250px;
-  border: 2px solid red;
-  border-radius: 8px;
-  z-index: 10;
+/* ---------- SMALL CAMERAS ---------- */
+.camera.sub{
+  border-radius:12px;
+  border-color:#00ff88;
+  aspect-ratio:16/9;
+  background:#020617;
 }
 
-.overlay.top-right {
-  margin-top: auto; /* let flex push it to bottom if needed */
-  top: 10px; /* safer than 65vh */
+/* ---------- CAMERA LABEL TEXT ---------- */
+.sub-cameras > div{
+  font-size:14px;
+  color:#94a3b8;
+  margin-left:4px;
+}
+
+/* ---------- OVERLAY COMMON ---------- */
+.overlay{
+  position:absolute;
+  color:#00ff88;
+  font-family:monospace;
+  font-size:14px;
+  background:rgba(0,0,0,0.55);
+  padding:6px 10px;
+  border-radius:6px;
+  line-height:1.4;
+  box-shadow:0 0 8px rgba(0,255,136,0.35);
+  pointer-events:none;
+}
+
+/* ---------- TOP LEFT ---------- */
+.top-left{
+  top:10px;
+  left:10px;
+  font-size:15px;
+  font-weight:500;
+}
+
+/* ---------- RIGHT PANEL ---------- */
+.top-rightpanel{
+  position:absolute;
+  top:10px;
+  right:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+  z-index:10;
+}
+
+/* ---------- SNAPSHOT IMAGE ---------- */
+.violation-overlay{
+  width:220px;
+  border:2px solid #ff3b3b;
+  border-radius:8px;
+  background:#000;
+}
+
+/* ---------- STATS PANEL ---------- */
+.overlay.top-right{
+  font-size:15px;
+  min-width:190px;
+  max-width:260px;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:1200px){
+  .camera-container{
+    flex-direction:column;
+  }
+
+  .sub-cameras{
+    flex-direction:row;
+  }
+
+  .camera.main{
+    width:100%;
+  }
 }
