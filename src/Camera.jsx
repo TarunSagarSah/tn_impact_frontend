@@ -1,8 +1,6 @@
 import "./App.css";
 import cameraGif from './assets/giphy.gif';
 import { useEffect, useRef, useState } from "react";
-import samplevideo1 from './assets/samplevideo1.mp4';
-import samplevideo2 from './assets/samplevideo2.mp4';
 
 function Camera() {
   const videoRef = useRef(null);
